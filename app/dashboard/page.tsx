@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 type Issue = {
   id: string;
@@ -20,6 +21,9 @@ export default function DashboardPage() {
     description: "",
   });
   const [error, setError] = useState("");
+  const [isLoadingInitial, setIsLoadingInitial] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
   const router = useRouter();
 
   const fetchUser = async () => {
@@ -54,12 +58,17 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    fetchUser();
-    fetchIssues();
+    const loadInitialData = async () => {
+      await Promise.all([fetchUser(), fetchIssues()]);
+      setIsLoadingInitial(false);
+    };
+    loadInitialData();
   }, []);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsCreating(true);
+    setError("");
     try {
       const token = localStorage.getItem("accessToken");
       const res = await fetch("/api/issues", {
@@ -76,21 +85,36 @@ export default function DashboardPage() {
       setForm({ ...form, title: "", description: "" });
     } catch (err: any) {
       setError(err.message);
+    } finally {
+      setIsCreating(false);
     }
   };
 
   const handleDelete = async (id: string) => {
+    setIsDeletingId(id);
     const token = localStorage.getItem("accessToken");
     await fetch(`/api/issues/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
     setIssues(issues.filter((issue) => issue.id !== id));
+    setIsDeletingId(null);
   };
 
   const handleFilter = (type: string) => {
     fetchIssues(type);
   };
+
+  if (isLoadingInitial) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center gap-4">
+          <LoadingSpinner size="lg" />
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto mt-8">
@@ -105,6 +129,7 @@ export default function DashboardPage() {
             value={form.type}
             onChange={(e) => setForm({ ...form, type: e.target.value })}
             className="border p-2"
+            disabled={isCreating}
           >
             <option>Cloud Security</option>
             <option>Reteam Assessment</option>
@@ -117,6 +142,7 @@ export default function DashboardPage() {
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
             required
+            disabled={isCreating}
           />
           <textarea
             placeholder="Description"
@@ -124,12 +150,21 @@ export default function DashboardPage() {
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             required
+            disabled={isCreating}
           />
           <button
             type="submit"
-            className="bg-green-600 text-white py-2 rounded"
+            className="bg-green-600 text-white py-2 rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            disabled={isCreating}
           >
-            Create
+            {isCreating ? (
+              <>
+                <LoadingSpinner size="sm" />
+                <span>Creating...</span>
+              </>
+            ) : (
+              'Create'
+            )}
           </button>
         </form>
       </div>
@@ -138,25 +173,25 @@ export default function DashboardPage() {
         <h3 className="font-semibold">Filter Issues</h3>
         <button
           onClick={() => handleFilter("")}
-          className="mr-2 px-2 py-1 bg-gray-300 rounded"
+          className="mr-2 px-2 py-1 bg-gray-300 rounded hover:bg-gray-400"
         >
           All
         </button>
         <button
           onClick={() => handleFilter("Cloud Security")}
-          className="mr-2 px-2 py-1 bg-gray-300 rounded"
+          className="mr-2 px-2 py-1 bg-gray-300 rounded hover:bg-gray-400"
         >
           Cloud Security
         </button>
         <button
           onClick={() => handleFilter("Reteam Assessment")}
-          className="mr-2 px-2 py-1 bg-gray-300 rounded"
+          className="mr-2 px-2 py-1 bg-gray-300 rounded hover:bg-gray-400"
         >
           Reteam
         </button>
         <button
           onClick={() => handleFilter("VAPT")}
-          className="px-2 py-1 bg-gray-300 rounded"
+          className="px-2 py-1 bg-gray-300 rounded hover:bg-gray-400"
         >
           VAPT
         </button>
@@ -176,9 +211,17 @@ export default function DashboardPage() {
             </div>
             <button
               onClick={() => handleDelete(issue.id)}
-              className="text-red-600"
+              className="text-red-600 hover:text-red-800 disabled:opacity-50 flex items-center gap-2"
+              disabled={isDeletingId === issue.id}
             >
-              Delete
+              {isDeletingId === issue.id ? (
+                <>
+                  <LoadingSpinner size="sm" />
+                  <span>Deleting...</span>
+                </>
+              ) : (
+                'Delete'
+              )}
             </button>
           </div>
         ))}
