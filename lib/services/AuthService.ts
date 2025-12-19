@@ -4,6 +4,7 @@ import UserRepository from "../repositories/UserRepository";
 import { BadRequestError, UnauthorizedError } from "../utils/Errors";
 import { EmailService } from "./EmailService";
 
+// added JWT_SECRET check
 const JWT_SECRET = process.env.JWT_SECRET!;
 const ACCESS_TOKEN_EXPIRES_IN = "15m";
 const REFRESH_TOKEN_EXPIRES_IN = "7d";
