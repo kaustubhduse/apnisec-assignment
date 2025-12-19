@@ -1,4 +1,6 @@
-import IssueController from '@/lib/controllers/IssueController';
+import IssueController from "@/lib/controllers/IssueController";
+
+export const runtime = "nodejs";
 
 export async function GET(request: Request) {
   return IssueController.listIssues(request);

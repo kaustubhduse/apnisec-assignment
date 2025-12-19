@@ -1,6 +1,8 @@
 import IssueController from "@/lib/controllers/IssueController";
 import { NextRequest } from "next/server";
 
+export const runtime = "nodejs";
+
 // Helper to attach issue-id header while keeping types compatible with Next 16
 async function withIssueId(
   request: NextRequest,

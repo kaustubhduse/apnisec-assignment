@@ -1,4 +1,6 @@
-import UserController from '@/lib/controllers/UserController';
+import UserController from "@/lib/controllers/UserController";
+
+export const runtime = "nodejs";
 
 export async function GET(request: Request) {
   return UserController.getProfile(request);

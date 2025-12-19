@@ -1,6 +1,8 @@
 import IssueController from "@/lib/controllers/IssueController";
 import { NextRequest } from "next/server";
 
+export const runtime = "nodejs";
+
 // Helper to add issue-id while matching Next 16 route types
 async function withIssueId(
   request: NextRequest,
