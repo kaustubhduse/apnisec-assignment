@@ -1,44 +1,47 @@
 import IssueController from "@/lib/controllers/IssueController";
+import { NextRequest } from "next/server";
+
+// Helper to attach issue-id header while keeping types compatible with Next 16
+async function withIssueId(
+  request: NextRequest,
+  params: { id: string } | Promise<{ id: string }>
+) {
+  const { id } = await params;
+  const cloned = request.clone();
+  const headers = new Headers(cloned.headers);
+  headers.set("issue-id", id);
+
+  return new Request(cloned.url, {
+    method: cloned.method,
+    headers,
+    // Avoid passing a body for GET/DELETE; clone() gives us a fresh stream for PUT
+    body:
+      cloned.method === "GET" || cloned.method === "DELETE"
+        ? undefined
+        : cloned.body,
+  });
+}
 
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: { id: string } } | { params: Promise<{ id: string }> }
 ) {
-  // Add the issue ID to the request headers so the controller can access it
-  const newRequest = new Request(request.url, {
-    method: request.method,
-    headers: new Headers(request.headers),
-    body: request.body,
-  });
-  newRequest.headers.set("issue-id", params.id);
-
+  const newRequest = await withIssueId(request, context.params as any);
   return IssueController.getIssue(newRequest);
 }
 
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: { id: string } } | { params: Promise<{ id: string }> }
 ) {
-  const newRequest = new Request(request.url, {
-    method: request.method,
-    headers: new Headers(request.headers),
-    body: request.body,
-  });
-  newRequest.headers.set("issue-id", params.id);
-
+  const newRequest = await withIssueId(request, context.params as any);
   return IssueController.updateIssue(newRequest);
 }
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: { id: string } } | { params: Promise<{ id: string }> }
 ) {
-  const newRequest = new Request(request.url, {
-    method: request.method,
-    headers: new Headers(request.headers),
-    body: request.body,
-  });
-  newRequest.headers.set("issue-id", params.id);
-
+  const newRequest = await withIssueId(request, context.params as any);
   return IssueController.deleteIssue(newRequest);
 }
