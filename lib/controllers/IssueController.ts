@@ -8,7 +8,7 @@ export default class IssueController {
   static async listIssues(request: Request) {
     try{
       const ip = request.headers.get('x-forwarded-for') || '';
-      RateLimiter.check(ip);
+      await RateLimiter.check(ip);
 
       const authHeader = request.headers.get('Authorization') || '';
       const token = authHeader.split(' ')[1];

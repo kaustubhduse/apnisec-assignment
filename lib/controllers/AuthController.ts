@@ -8,7 +8,7 @@ export default class AuthController {
   static async register(request: Request){
     try{
       const ip = request.headers.get('x-forwarded-for') || 'unknown';
-      RateLimiter.check(ip);
+      await RateLimiter.check(ip);
 
       const body = await request.json();
       const data = RegisterSchema.parse(body);
