@@ -59,16 +59,17 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10">
-      <h2 className="text-2xl mb-4">Your Profile</h2>
-      <label className="block mb-2">Name</label>
+    <div className="max-w-md mx-auto mt-10 px-4">
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+        <h2 className="text-2xl font-bold mb-4">Your Profile</h2>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
       <input
         className="border p-2 w-full mb-4"
         value={name}
         onChange={(e) => setName(e.target.value)}
         disabled={isUpdating}
       />
-      <label className="block mb-2">Email</label>
+      <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
       <input className="border p-2 w-full mb-4" value={email} readOnly />
       <button
         onClick={handleUpdate}
@@ -84,6 +85,7 @@ export default function ProfilePage() {
           'Update Profile'
         )}
       </button>
+      </div>
     </div>
   );
 }
