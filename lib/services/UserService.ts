@@ -18,13 +18,14 @@ export default class UserService {
     if (!user) throw new NotFoundError("User not found");
     const updated = await this.userRepo.updateUser(userId, data);
 
-    try {
-      await this.emailService.sendProfileUpdatedEmail(user.email, {
+    // Send email asynchronously (don't wait for it)
+    this.emailService
+      .sendProfileUpdatedEmail(user.email, {
         name: data.name || user.name,
+      })
+      .catch((error) => {
+        console.error("Failed to send profile update email:", error);
       });
-    } catch (error) {
-      console.error("Failed to send profile update email:", error);
-    }
 
     return updated;
   }

@@ -30,13 +30,10 @@ export default class AuthService {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.userRepo.createUser(name, email, hashedPassword);
 
-    // Send welcome email directly
-    try {
-      await this.emailService.sendWelcomeEmail(user.email, user.name);
-    } catch (error) {
+    // Send welcome email asynchronously (don't wait, don't block)
+    this.emailService.sendWelcomeEmail(user.email, user.name).catch((error) => {
       console.error("Failed to send welcome email:", error);
-      // Continue registration even if email fails
-    }
+    });
 
     return user;
   }
