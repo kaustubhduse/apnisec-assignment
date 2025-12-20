@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import UserRepository from "../repositories/UserRepository";
 import { BadRequestError, UnauthorizedError } from "../utils/Errors";
-import { notificationQueue }  from "../queue/NotificationQueue";
+import { EmailService } from "./EmailService";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const ACCESS_TOKEN_EXPIRES_IN = "15m";
@@ -14,9 +14,11 @@ if (!JWT_SECRET) {
 
 export default class AuthService {
   private userRepo: UserRepository;
+  private emailService: EmailService;
 
   constructor() {
     this.userRepo = new UserRepository();
+    this.emailService = new EmailService();
   }
 
   async register(name: string, email: string, password: string) {
@@ -28,14 +30,12 @@ export default class AuthService {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.userRepo.createUser(name, email, hashedPassword);
 
+    // Send welcome email directly
     try {
-      await notificationQueue.publishEmailNotification({
-        type: 'welcome',
-        to: user.email,
-        data: { name: user.name }
-      });
+      await this.emailService.sendWelcomeEmail(user.email, user.name);
     } catch (error) {
-      console.error("Failed to queue welcome email:", error);
+      console.error("Failed to send welcome email:", error);
+      // Continue registration even if email fails
     }
 
     return user;
@@ -84,7 +84,9 @@ export default class AuthService {
     const user = await this.userRepo.getUserById(payload.userId);
     if (
       !user ||
-      !user.refreshTokens.some((rt: { token: string }) => rt.token === oldRefreshToken)
+      !user.refreshTokens.some(
+        (rt: { token: string }) => rt.token === oldRefreshToken
+      )
     ) {
       throw new UnauthorizedError("Invalid refresh token");
     }
