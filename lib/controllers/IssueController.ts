@@ -17,8 +17,9 @@ export default class IssueController {
       const { userId } = JSON.parse(atob(token.split('.')[1]));
       const { searchParams } = new URL(request.url);
       const type = searchParams.get('type') || undefined;
+      const search = searchParams.get('search') || undefined;
       const service = new IssueService();
-      const issues = await service.listIssues(userId, type);
+      const issues = await service.listIssues(userId, type, search);
       return NextResponse.json({ issues }, { status: 200 });
     } 
     catch(err: any){

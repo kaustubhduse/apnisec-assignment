@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 
 export default function NavBar() {
@@ -10,10 +11,9 @@ export default function NavBar() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Check if user is logged in
     const token = localStorage.getItem("accessToken");
     setIsLoggedIn(!!token);
-  }, [pathname]); // Re-check on route change
+  }, [pathname]);
 
   const handleLogout = async () => {
     const refreshToken = localStorage.getItem("refreshToken");
@@ -30,7 +30,6 @@ export default function NavBar() {
       }
     }
 
-    // Clear tokens from localStorage
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     setIsLoggedIn(false);
@@ -43,98 +42,98 @@ export default function NavBar() {
   };
 
   return (
-    <nav className="bg-gray-800 text-white p-4">
-      <div className="flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="text-xl font-bold cursor-pointer hover:text-gray-300">
-          ApniSec
-        </Link>
+    <nav className="bg-gradient-to-r from-slate-900 via-gray-900 to-slate-900 text-white border-b border-cyan-500/20 shadow-lg">
+      <div className="px-5 mx-auto">
+        <div className="flex items-center justify-between h-16">
+          <Link href="/" className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+            <Image src="/logo.png" alt="ApniSec Logo" width={120} height={120} className="rounded" />
+          </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-4">
-          {isLoggedIn ? (
-            <>
-              <Link href="/dashboard" className="cursor-pointer hover:text-gray-300 transition-colors">
-                Dashboard
-              </Link>
-              <Link href="/profile" className="cursor-pointer hover:text-gray-300 transition-colors">
-                Profile
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded cursor-pointer transition-colors"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link href="/login" className="cursor-pointer hover:bg-gray-700 transition-colors px-6 py-2 rounded border border-gray-600">
-                Login
-              </Link>
-              <Link href="/register" className="cursor-pointer bg-blue-600 hover:bg-blue-700 transition-colors px-6 py-2 rounded">
-                Register
-              </Link>
-            </>
-          )}
+          <div className="hidden md:flex items-center space-x-6">
+            {isLoggedIn ? (
+              <>
+                <Link href="/dashboard" className="cursor-pointer hover:text-cyan-400 transition-colors px-3 py-2 rounded-md hover:bg-slate-800/50 font-medium">
+                  Dashboard
+                </Link>
+                <Link href="/profile" className="cursor-pointer hover:text-cyan-400 transition-colors px-3 py-2 rounded-md hover:bg-slate-800/50 font-medium">
+                  Profile
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-600 hover:bg-red-700 px-5 py-2 rounded-md cursor-pointer transition-colors font-medium shadow-md hover:shadow-lg"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="cursor-pointer hover:text-cyan-400 transition-colors px-4 py-2 rounded-md hover:bg-slate-800/50 font-medium border border-transparent hover:border-cyan-500/30">
+                  Login
+                </Link>
+                <Link href="/register" className="cursor-pointer bg-cyan-600 hover:bg-cyan-700 transition-colors px-5 py-2 rounded-md font-medium shadow-md hover:shadow-lg">
+                  Register
+                </Link>
+              </>
+            )}
+          </div>
+
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden cursor-pointer p-2 hover:bg-slate-800 rounded transition-colors"
+            aria-label="Toggle menu"
+          >
+            <div className="w-6 h-0.5 bg-cyan-400 mb-1.5"></div>
+            <div className="w-6 h-0.5 bg-cyan-400 mb-1.5"></div>
+            <div className="w-6 h-0.5 bg-cyan-400"></div>
+          </button>
         </div>
-
-        {/* Hamburger Button for Mobile */}
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden cursor-pointer p-2 hover:bg-gray-700 rounded transition-colors"
-          aria-label="Toggle menu"
-        >
-          <div className="w-6 h-0.5 bg-white mb-1"></div>
-          <div className="w-6 h-0.5 bg-white mb-1"></div>
-          <div className="w-6 h-0.5 bg-white"></div>
-        </button>
       </div>
 
-      {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden mt-4 flex flex-col gap-3">
-          {isLoggedIn ? (
-            <>
-              <Link 
-                href="/dashboard" 
-                className="cursor-pointer hover:text-gray-300 transition-colors py-2"
-                onClick={closeMobileMenu}
-              >
-                Dashboard
-              </Link>
-              <Link 
-                href="/profile" 
-                className="cursor-pointer hover:text-gray-300 transition-colors py-2"
-                onClick={closeMobileMenu}
-              >
-                Profile
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded cursor-pointer transition-colors text-left"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link 
-                href="/login" 
-                className="cursor-pointer hover:bg-gray-700 transition-colors py-2 px-6 rounded border border-gray-600 text-center"
-                onClick={closeMobileMenu}
-              >
-                Login
-              </Link>
-              <Link 
-                href="/register" 
-                className="cursor-pointer bg-blue-600 hover:bg-blue-700 transition-colors py-2 px-6 rounded text-center"
-                onClick={closeMobileMenu}
-              >
-                Register
-              </Link>
-            </>
-          )}
+        <div className="md:hidden border-t border-cyan-500/20 bg-slate-900/95 backdrop-blur-sm">
+          <div className="px-4 py-4 space-y-3">
+            {isLoggedIn ? (
+              <>
+                <Link 
+                  href="/dashboard" 
+                  className="block cursor-pointer hover:text-cyan-400 transition-colors py-2 px-3 rounded-md hover:bg-slate-800/50 font-medium"
+                  onClick={closeMobileMenu}
+                >
+                  Dashboard
+                </Link>
+                <Link 
+                  href="/profile" 
+                  className="block cursor-pointer hover:text-cyan-400 transition-colors py-2 px-3 rounded-md hover:bg-slate-800/50 font-medium"
+                  onClick={closeMobileMenu}
+                >
+                  Profile
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="w-full bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md cursor-pointer transition-colors text-left font-medium shadow-md"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link 
+                  href="/login" 
+                  className="block cursor-pointer hover:text-cyan-400 transition-colors py-2 px-3 rounded-md hover:bg-slate-800/50 font-medium border border-transparent hover:border-cyan-500/30"
+                  onClick={closeMobileMenu}
+                >
+                  Login
+                </Link>
+                <Link 
+                  href="/register" 
+                  className="block cursor-pointer bg-cyan-600 hover:bg-cyan-700 transition-colors py-2 px-3 rounded-md text-center font-medium shadow-md"
+                  onClick={closeMobileMenu}
+                >
+                  Register
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       )}
     </nav>

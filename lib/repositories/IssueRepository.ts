@@ -1,8 +1,20 @@
 import prisma from '../prisma';
 
 export default class IssueRepository {
-  async getAllIssues(userId: string, type?: string) {
-    const where = { userId, ...(type ? { type } : {}) };
+  async getAllIssues(userId: string, type?: string, search?: string) {
+    const where: any = { userId };
+    
+    if (type) {
+      where.type = type;
+    }
+    
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+    
     return prisma.issue.findMany({ where });
   }
 

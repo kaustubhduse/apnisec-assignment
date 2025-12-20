@@ -2,9 +2,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import UserRepository from "../repositories/UserRepository";
 import { BadRequestError, UnauthorizedError } from "../utils/Errors";
-import { EmailService } from "./EmailService";
+import { notificationQueue } from "../queue/NotificationQueue";
 
-// added JWT_SECRET check
 const JWT_SECRET = process.env.JWT_SECRET!;
 const ACCESS_TOKEN_EXPIRES_IN = "15m";
 const REFRESH_TOKEN_EXPIRES_IN = "7d";
@@ -15,11 +14,9 @@ if (!JWT_SECRET) {
 
 export default class AuthService {
   private userRepo: UserRepository;
-  private emailService: EmailService;
 
   constructor() {
     this.userRepo = new UserRepository();
-    this.emailService = new EmailService();
   }
 
   async register(name: string, email: string, password: string) {
@@ -32,10 +29,13 @@ export default class AuthService {
     const user = await this.userRepo.createUser(name, email, hashedPassword);
 
     try {
-      await this.emailService.sendWelcomeEmail(user.email, user.name);
-    } 
-    catch (error) {
-      console.error("Failed to send welcome email:", error);
+      await notificationQueue.publishEmailNotification({
+        type: 'welcome',
+        to: user.email,
+        data: { name: user.name }
+      });
+    } catch (error) {
+      console.error("Failed to queue welcome email:", error);
     }
 
     return user;
@@ -50,10 +50,7 @@ export default class AuthService {
       throw new UnauthorizedError("Invalid credentials");
     }
 
-    console.log("Comparing passwords...");
     const isValidPassword = await bcrypt.compare(password, user.password);
-    console.log("Password valid:", isValidPassword);
-
     if (!isValidPassword) {
       throw new UnauthorizedError("Invalid credentials");
     }

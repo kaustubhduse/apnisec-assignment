@@ -1,21 +1,19 @@
 import IssueRepository from '../repositories/IssueRepository';
 import UserRepository from '../repositories/UserRepository';
 import { NotFoundError } from '../utils/Errors';
-import { EmailService } from './EmailService';
+import { notificationQueue } from '../queue/NotificationQueue';
 
 export default class IssueService {
   private issueRepo: IssueRepository;
   private userRepo: UserRepository;
-  private emailService: EmailService;
 
   constructor() {
     this.issueRepo = new IssueRepository();
     this.userRepo = new UserRepository();
-    this.emailService = new EmailService();
   }
 
-  async listIssues(userId: string, type?: string) {
-    return this.issueRepo.getAllIssues(userId, type);
+  async listIssues(userId: string, type?: string, search?: string) {
+    return this.issueRepo.getAllIssues(userId, type, search);
   }
 
   async getIssue(userId: string, issueId: string) {
@@ -31,11 +29,22 @@ export default class IssueService {
 
     const user = await this.userRepo.getUserById(userId);
     if (user) {
-      await this.emailService.sendIssueCreatedEmail(user.email, {
-        type: issue.type,
-        title: issue.title,
-        description: issue.description,
-      });
+      try{
+        await notificationQueue.publishEmailNotification({
+          type: 'issue_created',
+          to: user.email,
+          data: {
+            type: issue.type,
+            title: issue.title,
+            description: issue.description,
+            priority: issue.priority,
+            status: issue.status,
+          }
+        });
+      } 
+      catch (error){
+        console.error("Failed to queue issue notification:", error);
+      }
     }
 
     return issue;
