@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import UserRepository from "../repositories/UserRepository";
 import { BadRequestError, UnauthorizedError } from "../utils/Errors";
-import { notificationQueue } from "../queue/NotificationQueue";
+import { notificationQueue }  from "../queue/NotificationQueue";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const ACCESS_TOKEN_EXPIRES_IN = "15m";
@@ -84,7 +84,7 @@ export default class AuthService {
     const user = await this.userRepo.getUserById(payload.userId);
     if (
       !user ||
-      !user.refreshTokens.some((rt) => rt.token === oldRefreshToken)
+      !user.refreshTokens.some((rt: { token: string }) => rt.token === oldRefreshToken)
     ) {
       throw new UnauthorizedError("Invalid refresh token");
     }
