@@ -5,6 +5,7 @@ import {
   getProfileUpdatedEmailTemplate,
   type IssueData,
 } from "../email-templates";
+import { EmailLogger } from "../utils/EmailLogger";
 
 export class EmailService {
   private resend: Resend | null;
@@ -16,78 +17,106 @@ export class EmailService {
   }
 
   async sendWelcomeEmail(email: string, name: string) {
-    console.log('\n=== [EmailService] sendWelcomeEmail called ===');
-    console.log('To:', email);
-    console.log('Name:', name);
-    console.log('Resend configured:', !!this.resend);
-    console.log('API Key exists:', !!this.apiKey);
+    const fromEmail = process.env.EMAIL_FROM_WELCOME || "onboarding@resend.dev";
+    const subject = "Welcome to ApniSec - Your Security Partner";
+    const environment = process.env.VERCEL ? 'production' : 'development';
     
     if (!this.resend) {
-      console.warn("⚠️ Email service not configured. RESEND_API_KEY missing. Skipping welcome email.");
+      EmailLogger.logEmail({
+        timestamp: new Date().toISOString(),
+        type: 'welcome',
+        to: email,
+        from: fromEmail,
+        subject,
+        status: 'skipped',
+        error: 'RESEND_API_KEY not configured',
+        environment: environment as 'production' | 'development',
+      });
       return;
     }
 
-    const fromEmail = process.env.EMAIL_FROM_WELCOME || "onboarding@resend.dev";
-    console.log('From email:', fromEmail);
-
-    const dashboardUrl =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+    const dashboardUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
     try {
       const result = await this.resend.emails.send({
         from: fromEmail,
         to: email,
-        subject: "Welcome to ApniSec - Your Security Partner",
+        subject,
         html: getWelcomeEmailTemplate(name, dashboardUrl),
       });
-      console.log(`✅ Welcome email sent successfully to ${email}`);
-      console.log('Resend result:', JSON.stringify(result));
+      
+      EmailLogger.logEmail({
+        timestamp: new Date().toISOString(),
+        type: 'welcome',
+        to: email,
+        from: fromEmail,
+        subject,
+        status: 'sent',
+        environment: environment as 'production' | 'development',
+      });
     } catch (error: any) {
-      console.error(`❌ Failed to send welcome email to ${email}:`);
-      console.error('Error name:', error?.name);
-      console.error('Error message:', error?.message);
-      console.error('Full error:', error);
-      // Don't throw - just log to prevent breaking the flow
+      EmailLogger.logEmail({
+        timestamp: new Date().toISOString(),
+        type: 'welcome',
+        to: email,
+        from: fromEmail,
+        subject,
+        status: 'failed',
+        error: error?.message || 'Unknown error',
+        environment: environment as 'production' | 'development',
+      });
     }
   }
 
   async sendIssueCreatedEmail(email: string, issue: IssueData) {
-    console.log('\n=== [EmailService] sendIssueCreatedEmail called ===');
-    console.log('To:', email);
-    console.log('Issue:', issue);
-    console.log('Resend configured:', !!this.resend);
+    const fromEmail = process.env.EMAIL_FROM_ALERTS || "alerts@resend.dev";
+    const subject = `New Issue Created: ${issue.title}`;
+    const environment = process.env.VERCEL ? 'production' : 'development';
     
     if (!this.resend) {
-      console.warn(
-        "⚠️ Email service not configured. RESEND_API_KEY missing. Skipping issue notification email."
-      );
+      EmailLogger.logEmail({
+        timestamp: new Date().toISOString(),
+        type: 'issue_created',
+        to: email,
+        from: fromEmail,
+        subject,
+        status: 'skipped',
+        error: 'RESEND_API_KEY not configured',
+        environment: environment as 'production' | 'development',
+      });
       return;
     }
 
-    const fromEmail = process.env.EMAIL_FROM_ALERTS || "alerts@resend.dev";
-    console.log('From email:', fromEmail);
-    const dashboardUrl =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+    const dashboardUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
     try {
       const result = await this.resend.emails.send({
         from: fromEmail,
         to: email,
-        subject: `New Issue Created: ${issue.title}`,
+        subject,
         html: getIssueCreatedEmailTemplate(issue, dashboardUrl),
       });
-      console.log(
-        `✅ Issue notification email sent successfully to ${email}`
-      );
-      console.log('Resend result:', JSON.stringify(result));
+      
+      EmailLogger.logEmail({
+        timestamp: new Date().toISOString(),
+        type: 'issue_created',
+        to: email,
+        from: fromEmail,
+        subject,
+        status: 'sent',
+        environment: environment as 'production' | 'development',
+      });
     } catch (error: any) {
-      console.error(
-        `❌ Failed to send issue notification email to ${email}:`
-      );
-      console.error('Error name:', error?.name);
-      console.error('Error message:', error?.message);
-      console.error('Full error:', error);
-      // Don't throw - just log to prevent breaking the flow
+      EmailLogger.logEmail({
+        timestamp: new Date().toISOString(),
+        type: 'issue_created',
+        to: email,
+        from: fromEmail,
+        subject,
+        status: 'failed',
+        error: error?.message || 'Unknown error',
+        environment: environment as 'production' | 'development',
+      });
     }
   }
 
