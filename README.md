@@ -72,7 +72,7 @@ ApniSec is a modern, secure issue management system built with Next.js 15, featu
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/kaustubhduse/apnisec-assignment
    cd apnisec
    ```
 
@@ -85,18 +85,15 @@ ApniSec is a modern, secure issue management system built with Next.js 15, featu
    
    Create a `.env` file in the root directory:
    ```env
-   DATABASE_URL="postgresql://user:password@host:port/database"
-   
-   JWT_SECRET="your-secure-jwt-secret"
-   REFRESH_TOKEN_SECRET="your-secure-refresh-secret"
-   
-   UPSTASH_REDIS_REST_URL="your-upstash-redis-url"
-   UPSTASH_REDIS_REST_TOKEN="your-upstash-token"
-   
-   RABBITMQ_URL="amqp://user:password@host:port"
-   
-   RESEND_API_KEY="your-resend-api-key"
-   EMAIL_FROM="noreply@yourdomain.com"
+   DATABASE_URL=
+   JWT_SECRET=
+   RESEND_API_KEY=
+   NEXT_PUBLIC_API_URL=http://localhost:3000
+   UPSTASH_REDIS_REST_URL=
+   UPSTASH_REDIS_REST_TOKEN=
+   RABBITMQ_URL=
+   EMAIL_FROM_WELCOME=
+   EMAIL_FROM_ALERTS=
    ```
 
 4. **Set up the database**
@@ -151,7 +148,3 @@ apnisec/
 - `POST /api/auth/logout` - User logout
 - `POST /api/issues` - Create issue
 - `GET /api/issues` - List issues
-
-## License
-
-MIT
