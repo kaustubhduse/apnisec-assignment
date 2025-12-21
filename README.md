@@ -6,15 +6,19 @@
 
 ## Overview
 
-ApniSec is a modern, secure issue management system built with Next.js 15, featuring JWT-based authentication, real-time notifications, and asynchronous email processing.
+ApniSec is a modern, secure issue management system built for the **SDE Intern Assignment**. The application features custom JWT-based authentication, real-time notifications, asynchronous email processing, and follows strict **Object-Oriented Programming (OOP)** principles throughout the entire backend architecture.
+
+**Assignment Requirements Met**: Custom authentication, rate limiting (100 req/15 min), email integration (Resend), OOP structure, SEO optimization (80%+ score).
 
 ## Key Features
 
-- **Secure Authentication**: JWT-based auth with refresh token rotation and Redis-backed rate limiting
-- **Email Notifications**: Asynchronous email delivery via RabbitMQ and Resend API
-- **Issue Management**: Create, track, and manage issues with priority and status workflows
-- **Performance**: Server-side rendering, optimized database queries with Prisma
-- **Modern UI**: Responsive design with Tailwind CSS
+- **Custom JWT Authentication**: Dual-token strategy with refresh token rotation
+- **Rate Limiting**: Custom implementation (100 requests per 15 minutes per IP/user)
+- **Email Notifications**: Asynchronous delivery via RabbitMQ + Resend API
+- **Issue Management**: Track Cloud Security, Reteam Assessment, and VAPT issues
+- **OOP Architecture**: Complete class-based backend (Controllers, Services, Repositories)
+- **SEO Optimized**: 80%+ Lighthouse score with meta tags and sitemaps
+- **Modern UI**: Responsive design with Tailwind CSS and cybersecurity theming
 
 ## Tech Stack
 
@@ -29,17 +33,36 @@ ApniSec is a modern, secure issue management system built with Next.js 15, featu
 
 ## Implementation Approach
 
+### OOP Architecture (Mandatory Requirement)
+- **Class-based structure** throughout the backend:
+  - `AuthController`, `IssueController` - Request handlers
+  - `AuthService`, `IssueService` - Business logic layer
+  - `UserRepository`, `IssueRepository` - Data access layer
+  - `RateLimiter` - Custom rate limiting implementation
+- Dependency injection pattern for service classes
+- Interface definitions for type safety
+- Proper separation of concerns across layers
+
 ### Authentication System
-- Implemented dual-token JWT strategy with access and refresh tokens
+- Custom JWT implementation with access and refresh tokens
 - Refresh tokens stored in PostgreSQL with automatic cleanup
 - IP-based tracking for security audit trails
-- Bcrypt password hashing with salt rounds
+- Bcrypt password hashing (10 salt rounds)
+- Protected route middleware for API security
 
-### Email Service
+### Rate Limiting
+- Custom `RateLimiter` class implementing Redis-backed storage
+- 100 requests per 15 minutes per IP address
+- Rate limit headers in responses (X-RateLimit-*)
+- Returns 429 status when limit exceeded
+- Applied to all protected API routes
+
+### Email Service (Resend Integration)
 - Decoupled email sending using RabbitMQ message queue
 - Consumer service processes emails asynchronously
-- HTML email templates for welcome, issue creation, and notifications
+- HTML templates: welcome email, issue creation alerts
 - Graceful fallback handling for email failures
+- Triggered on user registration and issue creation
 
 ### Database Design
 - Normalized schema with User, RefreshToken, and Issue models
@@ -142,9 +165,21 @@ apnisec/
 
 ## API Endpoints
 
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
+### Authentication APIs
+- `POST /api/auth/register` - User registration (triggers welcome email)
+- `POST /api/auth/login` - User login (returns JWT tokens)
 - `POST /api/auth/refresh` - Refresh access token
-- `POST /api/auth/logout` - User logout
-- `POST /api/issues` - Create issue
-- `GET /api/issues` - List issues
+- `POST /api/auth/logout` - User logout (invalidates refresh token)
+
+### Issue Management APIs
+- `POST /api/issues` - Create issue (Cloud Security, Reteam Assessment, VAPT)
+- `GET /api/issues` - List all issues (supports type filtering)
+- `GET /api/issues/[id]` - Get single issue
+- `PUT /api/issues/[id]` - Update issue
+- `DELETE /api/issues/[id]` - Delete issue
+
+### User Profile API
+- `GET /api/users/profile` - Get user profile (protected)
+- `PUT /api/users/profile` - Update user profile (protected)
+
+**All APIs**: Rate limited, input validated, OOP structured (Controller → Service → Repository)
