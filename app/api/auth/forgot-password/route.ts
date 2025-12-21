@@ -8,6 +8,7 @@ const emailService = new EmailService();
 export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json();
+    console.log('\n🔐 [FORGOT PASSWORD] Request received for email:', email);
 
     if (!email) {
       return NextResponse.json(
@@ -21,13 +22,19 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user) {
+      console.log('⚠️ [FORGOT PASSWORD] User not found:', email);
       return NextResponse.json({
         message: "If an account exists with this email, you will receive a password reset link shortly.",
       });
     }
 
+    console.log('✅ [FORGOT PASSWORD] User found:', user.name, '(', user.email, ')');
+
     const resetToken = crypto.randomBytes(32).toString("hex");
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+    console.log('🎟️ [FORGOT PASSWORD] Generated token:', resetToken.substring(0, 10) + '...');
+    console.log('⏰ [FORGOT PASSWORD] Token expires at:', expiresAt.toISOString());
 
     await prisma.passwordResetToken.create({
       data: {
@@ -37,7 +44,12 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    console.log('💾 [FORGOT PASSWORD] Token saved to database');
+    console.log('📧 [FORGOT PASSWORD] Sending password reset email...');
+
     await emailService.sendPasswordResetEmail(user.email, user.name, resetToken);
+
+    console.log('✅ [FORGOT PASSWORD] Process completed successfully\n');
 
     return NextResponse.json({
       message: "If an account exists with this email, you will receive a password reset link shortly.",
