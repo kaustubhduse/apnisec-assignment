@@ -17,8 +17,6 @@ export class NotificationQueue {
   async publishEmailNotification(notification: EmailNotification) {
     const channel = await getRabbitMQChannel();
 
-    // In serverless environments (like Vercel), consumers don't run reliably
-    // So we send emails directly instead of queueing them
     const isServerless = process.env.VERCEL || process.env.NEXT_RUNTIME === 'edge';
     const useQueue = process.env.USE_EMAIL_QUEUE === 'true';
     
@@ -65,7 +63,7 @@ export class NotificationQueue {
       } 
       catch (error){
         console.error('Error processing email:', error);
-        channel.nack(msg, false, false); // Don't requeue
+        channel.nack(msg, false, false);
       }
     });
   }
@@ -85,7 +83,7 @@ export class NotificationQueue {
             notification.to,
             notification.data.name
           );
-          console.log('✅ Welcome email sent successfully');
+          console.log('Welcome email sent successfully');
           break;
 
         case 'issue_created':
@@ -93,7 +91,7 @@ export class NotificationQueue {
             notification.to,
             notification.data
           );
-          console.log('✅ Issue created email sent successfully');
+          console.log('Issue created email sent successfully');
           break;
 
         case 'profile_updated':
@@ -101,7 +99,7 @@ export class NotificationQueue {
             notification.to,
             notification.data.name
           );
-          console.log('✅ Profile updated email sent successfully');
+          console.log('Profile updated email sent successfully');
           break;
 
         default:
@@ -109,9 +107,8 @@ export class NotificationQueue {
       }
     } 
     catch(error){
-      console.error(`❌ CRITICAL ERROR in processEmail for ${notification.type}:`);
+      console.error(`CRITICAL ERROR in processEmail for ${notification.type}:`);
       console.error('Error details:', error);
-      // Don't throw - just log the error to prevent breaking the flow
     }
   }
 }
