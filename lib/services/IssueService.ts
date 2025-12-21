@@ -31,18 +31,17 @@ export default class IssueService {
 
     const user = await this.userRepo.getUserById(userId);
     if (user) {
-      // Send email asynchronously (don't wait for it)
-      this.emailService
-        .sendIssueCreatedEmail(user.email, {
+      try {
+        await this.emailService.sendIssueCreatedEmail(user.email, {
           type: issue.type,
           title: issue.title,
           description: issue.description,
           priority: issue.priority,
           status: issue.status,
-        })
-        .catch((error) => {
-          console.error("Failed to send issue notification email:", error);
         });
+      } catch (error) {
+        console.error("Failed to send issue notification email:", error);
+      }
     }
 
     return issue;
