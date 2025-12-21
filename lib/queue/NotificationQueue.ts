@@ -17,8 +17,13 @@ export class NotificationQueue {
   async publishEmailNotification(notification: EmailNotification) {
     const channel = await getRabbitMQChannel();
 
-    if (!channel){
-      console.log('Queue unavailable, sending email directly...');
+    // In serverless environments (like Vercel), consumers don't run reliably
+    // So we send emails directly instead of queueing them
+    const isServerless = process.env.VERCEL || process.env.NEXT_RUNTIME === 'edge';
+    const useQueue = process.env.USE_EMAIL_QUEUE === 'true';
+    
+    if (!channel || (isServerless && !useQueue)){
+      console.log('Sending email directly (serverless or queue unavailable)...');
       await this.processEmail(notification);
       return;
     }
