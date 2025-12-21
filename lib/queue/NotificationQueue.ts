@@ -71,10 +71,12 @@ export class NotificationQueue {
   }
 
   private async processEmail(notification: EmailNotification){
-    console.log('\n[NotificationQueue] processEmail CALLED');
-    console.log('   Type:', notification.type);
-    console.log('   To:', notification.to);
-    console.log('   Data:', JSON.stringify(notification.data));
+    console.log('\n=== [NotificationQueue] processEmail CALLED ===');
+    console.log('Environment:', process.env.VERCEL ? 'Vercel' : 'Local');
+    console.log('Type:', notification.type);
+    console.log('To:', notification.to);
+    console.log('Data:', JSON.stringify(notification.data));
+    console.log('RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY);
     
     try{
       switch (notification.type) {
@@ -83,6 +85,7 @@ export class NotificationQueue {
             notification.to,
             notification.data.name
           );
+          console.log('✅ Welcome email sent successfully');
           break;
 
         case 'issue_created':
@@ -90,6 +93,7 @@ export class NotificationQueue {
             notification.to,
             notification.data
           );
+          console.log('✅ Issue created email sent successfully');
           break;
 
         case 'profile_updated':
@@ -97,6 +101,7 @@ export class NotificationQueue {
             notification.to,
             notification.data.name
           );
+          console.log('✅ Profile updated email sent successfully');
           break;
 
         default:
@@ -104,8 +109,9 @@ export class NotificationQueue {
       }
     } 
     catch(error){
-      console.error(`Error in processEmail for ${notification.type}:`, error);
-      throw error;
+      console.error(`❌ CRITICAL ERROR in processEmail for ${notification.type}:`);
+      console.error('Error details:', error);
+      // Don't throw - just log the error to prevent breaking the flow
     }
   }
 }

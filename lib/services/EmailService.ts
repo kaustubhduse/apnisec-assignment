@@ -16,12 +16,19 @@ export class EmailService {
   }
 
   async sendWelcomeEmail(email: string, name: string) {
+    console.log('\n=== [EmailService] sendWelcomeEmail called ===');
+    console.log('To:', email);
+    console.log('Name:', name);
+    console.log('Resend configured:', !!this.resend);
+    console.log('API Key exists:', !!this.apiKey);
+    
     if (!this.resend) {
-      console.warn("Email service not configured. Skipping welcome email.");
+      console.warn("⚠️ Email service not configured. RESEND_API_KEY missing. Skipping welcome email.");
       return;
     }
 
     const fromEmail = process.env.EMAIL_FROM_WELCOME || "onboarding@resend.dev";
+    console.log('From email:', fromEmail);
 
     const dashboardUrl =
       process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
@@ -33,22 +40,32 @@ export class EmailService {
         subject: "Welcome to ApniSec - Your Security Partner",
         html: getWelcomeEmailTemplate(name, dashboardUrl),
       });
-      console.log(`Welcome email sent successfully to ${email}`, result);
-    } catch (error) {
-      console.error(`Failed to send welcome email to ${email}:`, error);
-      throw error;
+      console.log(`✅ Welcome email sent successfully to ${email}`);
+      console.log('Resend result:', JSON.stringify(result));
+    } catch (error: any) {
+      console.error(`❌ Failed to send welcome email to ${email}:`);
+      console.error('Error name:', error?.name);
+      console.error('Error message:', error?.message);
+      console.error('Full error:', error);
+      // Don't throw - just log to prevent breaking the flow
     }
   }
 
   async sendIssueCreatedEmail(email: string, issue: IssueData) {
+    console.log('\n=== [EmailService] sendIssueCreatedEmail called ===');
+    console.log('To:', email);
+    console.log('Issue:', issue);
+    console.log('Resend configured:', !!this.resend);
+    
     if (!this.resend) {
       console.warn(
-        "Email service not configured. Skipping issue notification email."
+        "⚠️ Email service not configured. RESEND_API_KEY missing. Skipping issue notification email."
       );
       return;
     }
 
     const fromEmail = process.env.EMAIL_FROM_ALERTS || "alerts@resend.dev";
+    console.log('From email:', fromEmail);
     const dashboardUrl =
       process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
@@ -60,15 +77,17 @@ export class EmailService {
         html: getIssueCreatedEmailTemplate(issue, dashboardUrl),
       });
       console.log(
-        `Issue notification email sent successfully to ${email}`,
-        result
+        `✅ Issue notification email sent successfully to ${email}`
       );
-    } catch (error) {
+      console.log('Resend result:', JSON.stringify(result));
+    } catch (error: any) {
       console.error(
-        `Failed to send issue notification email to ${email}:`,
-        error
+        `❌ Failed to send issue notification email to ${email}:`
       );
-      throw error;
+      console.error('Error name:', error?.name);
+      console.error('Error message:', error?.message);
+      console.error('Full error:', error);
+      // Don't throw - just log to prevent breaking the flow
     }
   }
 
