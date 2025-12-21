@@ -39,9 +39,7 @@ export default function RegisterPage() {
           </h2>
 
           {error && (
-            <p className="text-red-400 mb-4 text-sm text-center">
-              {error}
-            </p>
+            <p className="text-red-400 mb-4 text-sm text-center">{error}</p>
           )}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -54,9 +52,7 @@ export default function RegisterPage() {
                          focus:ring-2 focus:ring-cyan-500 
                          focus:outline-none placeholder-gray-600"
               value={form.name}
-              onChange={(e) =>
-                setForm({ ...form, name: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
               required
               disabled={isLoading}
             />
@@ -70,9 +66,7 @@ export default function RegisterPage() {
                          focus:ring-2 focus:ring-cyan-500 
                          focus:outline-none placeholder-gray-600"
               value={form.email}
-              onChange={(e) =>
-                setForm({ ...form, email: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
               required
               disabled={isLoading}
             />
@@ -86,9 +80,7 @@ export default function RegisterPage() {
                          focus:ring-2 focus:ring-cyan-500 
                          focus:outline-none placeholder-gray-600"
               value={form.password}
-              onChange={(e) =>
-                setForm({ ...form, password: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
               required
               disabled={isLoading}
             />

@@ -55,21 +55,21 @@ export default function DashboardPage() {
   const fetchIssues = async (typeFilter?: string, searchFilter?: string) => {
     const token = localStorage.getItem("accessToken");
     if (!token) return;
-    
+
     const params = new URLSearchParams();
-    if (typeFilter) params.append('type', typeFilter);
-    if (searchFilter) params.append('search', searchFilter);
-    
+    if (typeFilter) params.append("type", typeFilter);
+    if (searchFilter) params.append("search", searchFilter);
+
     let url = "/api/issues";
     if (params.toString()) url += `?${params.toString()}`;
-    
+
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
     if (res.ok) {
       setIssues(data.issues);
-      setCurrentPage(1); 
+      setCurrentPage(1);
     }
     setIsLoadingFilter(false);
   };
@@ -87,16 +87,16 @@ export default function DashboardPage() {
     setIsCreating(true);
     setError("");
     try {
-      const token = localStorage.getItem("accessToken");      
+      const token = localStorage.getItem("accessToken");
       const issueData: any = {
         type: form.type,
         title: form.title,
         description: form.description,
       };
-      
+
       if (form.priority) issueData.priority = form.priority;
       if (form.status) issueData.status = form.status;
-      
+
       const res = await fetch("/api/issues", {
         method: "POST",
         headers: {
@@ -108,12 +108,16 @@ export default function DashboardPage() {
       if (!res.ok) throw new Error("Error creating issue");
       const data = await res.json();
       setIssues([data.issue, ...issues]); // Add to beginning
-      setForm({ ...form, title: "", description: "", priority: "", status: "" });
-    } 
-    catch (err: any) {
+      setForm({
+        ...form,
+        title: "",
+        description: "",
+        priority: "",
+        status: "",
+      });
+    } catch (err: any) {
       setError(err.message);
-    } 
-    finally {
+    } finally {
       setIsCreating(false);
     }
   };
@@ -155,7 +159,7 @@ export default function DashboardPage() {
   const goToPage = (page: number) => {
     setIsLoadingPage(true);
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
     setTimeout(() => setIsLoadingPage(false), 300);
   };
 
@@ -191,10 +195,12 @@ export default function DashboardPage() {
           <div>
             <h1 className="text-3xl font-bold text-cyan-400">Dashboard</h1>
             {user && (
-              <p className="text-gray-400 mt-2">Welcome back, {user.name}! 👋</p>
+              <p className="text-gray-400 mt-2">
+                Welcome back, {user.name}! 👋
+              </p>
             )}
           </div>
-          
+
           <form onSubmit={handleSearch} className="flex gap-2">
             <input
               type="text"
@@ -257,7 +263,9 @@ export default function DashboardPage() {
                     placeholder="Enter issue title"
                     className="w-full px-4 py-2 bg-black border border-cyan-900/40 text-green-400 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-colors placeholder-gray-600"
                     value={form.title}
-                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, title: e.target.value })
+                    }
                     required
                     disabled={isCreating}
                   />
@@ -284,7 +292,9 @@ export default function DashboardPage() {
                   </label>
                   <select
                     value={form.priority}
-                    onChange={(e) => setForm({ ...form, priority: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, priority: e.target.value })
+                    }
                     className="w-full px-4 py-2 bg-black border border-cyan-900/40 text-green-400 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-colors"
                     disabled={isCreating}
                   >
@@ -301,7 +311,9 @@ export default function DashboardPage() {
                   </label>
                   <select
                     value={form.status}
-                    onChange={(e) => setForm({ ...form, status: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, status: e.target.value })
+                    }
                     className="w-full px-4 py-2 bg-black border border-cyan-900/40 text-green-400 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-colors"
                     disabled={isCreating}
                   >
@@ -338,19 +350,21 @@ export default function DashboardPage() {
                 Filter Issues
               </h2>
               <div className="flex flex-wrap gap-2">
-                {["", "Cloud Security", "Reteam Assessment", "VAPT"].map((type) => (
-                  <button
-                    key={type || "all"}
-                    onClick={() => handleFilter(type)}
-                    className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                      activeFilter === type
-                        ? "bg-cyan-600 text-black shadow-[0_0_10px_rgba(34,211,238,0.5)]"
-                        : "bg-slate-800/50 text-gray-400 hover:bg-slate-700 hover:text-cyan-400 border border-cyan-900/20"
-                    }`}
-                  >
-                    {type || "All"}
-                  </button>
-                ))}
+                {["", "Cloud Security", "Reteam Assessment", "VAPT"].map(
+                  (type) => (
+                    <button
+                      key={type || "all"}
+                      onClick={() => handleFilter(type)}
+                      className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                        activeFilter === type
+                          ? "bg-cyan-600 text-black shadow-[0_0_10px_rgba(34,211,238,0.5)]"
+                          : "bg-slate-800/50 text-gray-400 hover:bg-slate-700 hover:text-cyan-400 border border-cyan-900/20"
+                      }`}
+                    >
+                      {type || "All"}
+                    </button>
+                  )
+                )}
               </div>
             </div>
 
@@ -360,7 +374,7 @@ export default function DashboardPage() {
                   <LoadingSpinner size="md" />
                 </div>
               )}
-              
+
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-cyan-400">
                   Your Issues ({issues.length})
@@ -440,7 +454,9 @@ export default function DashboardPage() {
                     <div className="bg-[#020617] border border-cyan-900/40 rounded-lg shadow-[0_0_16px_rgba(34,211,238,0.1)] p-4 mt-6">
                       <div className="flex items-center justify-between">
                         <p className="text-sm text-gray-400">
-                          Showing {startIndex + 1} to {Math.min(endIndex, issues.length)} of {issues.length} issues
+                          Showing {startIndex + 1} to{" "}
+                          {Math.min(endIndex, issues.length)} of {issues.length}{" "}
+                          issues
                         </p>
                         <div className="flex gap-2">
                           <button
@@ -451,21 +467,22 @@ export default function DashboardPage() {
                             Previous
                           </button>
                           <div className="flex gap-1">
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                              (page) => (
-                                <button
-                                  key={page}
-                                  onClick={() => goToPage(page)}
-                                  className={`px-3 py-2 rounded-md transition-colors ${
-                                    currentPage === page
-                                      ? "bg-cyan-600 text-black shadow-[0_0_10px_rgba(34,211,238,0.5)]"
-                                      : "bg-slate-800/50 text-gray-400 hover:bg-slate-700 hover:text-cyan-400 border border-cyan-900/20"
-                                  }`}
-                                >
-                                  {page}
-                                </button>
-                              )
-                            )}
+                            {Array.from(
+                              { length: totalPages },
+                              (_, i) => i + 1
+                            ).map((page) => (
+                              <button
+                                key={page}
+                                onClick={() => goToPage(page)}
+                                className={`px-3 py-2 rounded-md transition-colors ${
+                                  currentPage === page
+                                    ? "bg-cyan-600 text-black shadow-[0_0_10px_rgba(34,211,238,0.5)]"
+                                    : "bg-slate-800/50 text-gray-400 hover:bg-slate-700 hover:text-cyan-400 border border-cyan-900/20"
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            ))}
                           </div>
                           <button
                             onClick={() => goToPage(currentPage + 1)}

@@ -15,7 +15,7 @@ export default function LoginPage() {
     setIsLoading(true);
     setError("");
 
-    try{
+    try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -29,8 +29,7 @@ export default function LoginPage() {
       localStorage.setItem("refreshToken", data.refreshToken);
 
       router.push("/dashboard");
-    } 
-    catch (err: any){
+    } catch (err: any) {
       setError(err.message);
       setIsLoading(false);
     }
@@ -45,9 +44,7 @@ export default function LoginPage() {
           </h2>
 
           {error && (
-            <p className="text-red-400 mb-4 text-sm text-center">
-              {error}
-            </p>
+            <p className="text-red-400 mb-4 text-sm text-center">{error}</p>
           )}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -59,9 +56,7 @@ export default function LoginPage() {
                          focus:ring-2 focus:ring-cyan-500 
                          focus:outline-none placeholder-gray-600"
               value={form.email}
-              onChange={(e) =>
-                setForm({ ...form, email: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
               required
               disabled={isLoading}
             />
@@ -74,9 +69,7 @@ export default function LoginPage() {
                          focus:ring-2 focus:ring-cyan-500 
                          focus:outline-none placeholder-gray-600"
               value={form.password}
-              onChange={(e) =>
-                setForm({ ...form, password: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
               required
               disabled={isLoading}
             />
