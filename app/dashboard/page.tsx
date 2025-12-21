@@ -201,17 +201,17 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <form onSubmit={handleSearch} className="flex gap-2">
+          <form onSubmit={handleSearch} className="flex gap-2 w-full md:w-auto">
             <input
               type="text"
               placeholder="Search issues..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-64 px-3 py-2 bg-black border border-cyan-900/40 text-green-400 rounded-md focus:ring-2 focus:ring-cyan-500 focus:outline-none transition-colors placeholder-gray-600 text-sm"
+              className="flex-1 md:w-64 px-3 py-2 bg-black border border-cyan-900/40 text-green-400 rounded-md focus:ring-2 focus:ring-cyan-500 focus:outline-none transition-colors placeholder-gray-600 text-sm"
             />
             <button
               type="submit"
-              className="px-4 py-2 bg-cyan-600 text-black font-semibold rounded-md hover:bg-cyan-500 transition-colors shadow-[0_0_12px_rgba(34,211,238,0.5)] text-sm"
+              className="px-4 py-2 bg-cyan-600 text-black font-semibold rounded-md hover:bg-cyan-500 transition-colors shadow-[0_0_12px_rgba(34,211,238,0.5)] text-sm whitespace-nowrap"
             >
               Search
             </button>
@@ -219,7 +219,7 @@ export default function DashboardPage() {
               <button
                 type="button"
                 onClick={clearSearch}
-                className="px-3 py-2 bg-slate-800/50 text-gray-400 rounded-md hover:bg-slate-700 hover:text-cyan-400 transition-colors border border-cyan-900/20 text-sm"
+                className="px-3 py-2 bg-slate-800/50 text-gray-400 rounded-md hover:bg-slate-700 hover:text-cyan-400 transition-colors border border-cyan-900/20 text-sm whitespace-nowrap"
               >
                 Clear
               </button>
@@ -229,7 +229,7 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1">
-            <div className="bg-[#020617] border border-cyan-900/40 rounded-lg shadow-[0_0_20px_rgba(34,211,238,0.15)] p-6 sticky top-6">
+            <div className="bg-[#020617] border border-cyan-900/40 rounded-lg shadow-[0_0_20px_rgba(34,211,238,0.15)] p-4 sm:p-6 lg:sticky lg:top-6">
               <h2 className="text-xl font-semibold text-cyan-400 mb-4">
                 Create New Issue
               </h2>
@@ -345,7 +345,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-[#020617] border border-cyan-900/40 rounded-lg shadow-[0_0_20px_rgba(34,211,238,0.15)] p-6">
+            <div className="bg-[#020617] border border-cyan-900/40 rounded-lg shadow-[0_0_20px_rgba(34,211,238,0.15)] p-4 sm:p-6">
               <h2 className="text-lg font-semibold text-cyan-400 mb-4">
                 Filter Issues
               </h2>
@@ -450,21 +450,21 @@ export default function DashboardPage() {
                     ))}
                   </div>
 
-                  {totalPages > 1 && (
+                   {totalPages > 1 && (
                     <div className="bg-[#020617] border border-cyan-900/40 rounded-lg shadow-[0_0_16px_rgba(34,211,238,0.1)] p-4 mt-6">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm text-gray-400">
+                      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <p className="text-sm text-gray-400 text-center sm:text-left">
                           Showing {startIndex + 1} to{" "}
                           {Math.min(endIndex, issues.length)} of {issues.length}{" "}
                           issues
                         </p>
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2 justify-center">
                           <button
                             onClick={() => goToPage(currentPage - 1)}
                             disabled={currentPage === 1}
-                            className="px-3 py-2 bg-slate-800/50 text-gray-400 rounded-md hover:bg-slate-700 hover:text-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-cyan-900/20"
+                            className="px-3 py-2 bg-slate-800/50 text-gray-400 rounded-md hover:bg-slate-700 hover:text-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-cyan-900/20 text-sm"
                           >
-                            Previous
+                            Prev
                           </button>
                           <div className="flex gap-1">
                             {Array.from(
@@ -474,7 +474,7 @@ export default function DashboardPage() {
                               <button
                                 key={page}
                                 onClick={() => goToPage(page)}
-                                className={`px-3 py-2 rounded-md transition-colors ${
+                                className={`px-3 py-2 rounded-md transition-colors text-sm min-w-[2.5rem] ${
                                   currentPage === page
                                     ? "bg-cyan-600 text-black shadow-[0_0_10px_rgba(34,211,238,0.5)]"
                                     : "bg-slate-800/50 text-gray-400 hover:bg-slate-700 hover:text-cyan-400 border border-cyan-900/20"
@@ -487,7 +487,7 @@ export default function DashboardPage() {
                           <button
                             onClick={() => goToPage(currentPage + 1)}
                             disabled={currentPage === totalPages}
-                            className="px-3 py-2 bg-slate-800/50 text-gray-400 rounded-md hover:bg-slate-700 hover:text-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-cyan-900/20"
+                            className="px-3 py-2 bg-slate-800/50 text-gray-400 rounded-md hover:bg-slate-700 hover:text-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-cyan-900/20 text-sm"
                           >
                             Next
                           </button>
