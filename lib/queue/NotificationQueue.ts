@@ -69,13 +69,6 @@ export class NotificationQueue {
   }
 
   private async processEmail(notification: EmailNotification){
-    console.log('\n=== [NotificationQueue] processEmail CALLED ===');
-    console.log('Environment:', process.env.VERCEL ? 'Vercel' : 'Local');
-    console.log('Type:', notification.type);
-    console.log('To:', notification.to);
-    console.log('Data:', JSON.stringify(notification.data));
-    console.log('RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY);
-    
     try{
       switch (notification.type) {
         case 'welcome':
