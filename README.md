@@ -13,12 +13,14 @@ ApniSec is a modern, secure issue management system built for the **SDE Intern A
 ## Key Features
 
 - **Custom JWT Authentication**: Dual-token strategy with refresh token rotation
+- **Password Reset**: Secure token-based password reset with email integration (15-min expiration)
 - **Rate Limiting**: Custom implementation (100 requests per 15 minutes per IP/user)
 - **Email Notifications**: Asynchronous delivery via RabbitMQ + Resend API
+- **Email Logging**: Comprehensive tracking of all email attempts with status (sent/failed/skipped)
 - **Issue Management**: Track Cloud Security, Reteam Assessment, and VAPT issues
 - **OOP Architecture**: Complete class-based backend (Controllers, Services, Repositories)
 - **SEO Optimized**: 80%+ Lighthouse score with meta tags and sitemaps
-- **Modern UI**: Responsive design with Tailwind CSS and cybersecurity theming
+- **Mobile Responsive**: Fully responsive dashboard and forms for all screen sizes
 
 ## Tech Stack
 
@@ -170,6 +172,8 @@ apnisec/
 - `POST /api/auth/login` - User login (returns JWT tokens)
 - `POST /api/auth/refresh` - Refresh access token
 - `POST /api/auth/logout` - User logout (invalidates refresh token)
+- `POST /api/auth/forgot-password` - Request password reset (sends email with reset link)
+- `POST /api/auth/reset-password` - Reset password with token
 
 ### Issue Management APIs
 - `POST /api/issues` - Create issue (Cloud Security, Reteam Assessment, VAPT)
