@@ -92,6 +92,15 @@ export default function LoginPage() {
                 "Login"
               )}
             </button>
+
+            <div className="text-center mt-4">
+              <a
+                href="/forgot-password"
+                className="text-cyan-400 hover:text-cyan-300 text-sm transition-colors"
+              >
+                Forgot Password?
+              </a>
+            </div>
           </form>
         </div>
       </div>

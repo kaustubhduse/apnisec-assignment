@@ -3,6 +3,7 @@ import {
   getWelcomeEmailTemplate,
   getIssueCreatedEmailTemplate,
   getProfileUpdatedEmailTemplate,
+  getPasswordResetEmailTemplate,
   type IssueData,
 } from "../email-templates";
 import { EmailLogger } from "../utils/EmailLogger";
@@ -143,6 +144,58 @@ export class EmailService {
     } catch (error) {
       console.error(`Failed to send profile update email to ${email}:`, error);
       throw error;
+    }
+  }
+
+  async sendPasswordResetEmail(email: string, name: string, resetToken: string) {
+    const fromEmail = process.env.EMAIL_FROM_ALERTS || "alerts@resend.dev";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+    const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
+    const subject = "Reset Your Password - ApniSec";
+    const environment = process.env.VERCEL ? 'production' : 'development';
+    
+    if (!this.resend) {
+      EmailLogger.logEmail({
+        timestamp: new Date().toISOString(),
+        type: 'welcome', // Reusing 'welcome' type for now, can extend EmailLog interface later
+        to: email,
+        from: fromEmail,
+        subject,
+        status: 'skipped',
+        error: 'RESEND_API_KEY not configured',
+        environment: environment as 'production' | 'development',
+      });
+      return;
+    }
+
+    try {
+      const result = await this.resend.emails.send({
+        from: fromEmail,
+        to: email,
+        subject,
+        html: getPasswordResetEmailTemplate(name, resetUrl),
+      });
+      
+      EmailLogger.logEmail({
+        timestamp: new Date().toISOString(),
+        type: 'welcome', // Can extend types later
+        to: email,
+        from: fromEmail,
+        subject,
+        status: 'sent',
+        environment: environment as 'production' | 'development',
+      });
+    } catch (error: any) {
+      EmailLogger.logEmail({
+        timestamp: new Date().toISOString(),
+        type: 'welcome',
+        to: email,
+        from: fromEmail,
+        subject,
+        status: 'failed',
+        error: error?.message || 'Unknown error',
+        environment: environment as 'production' | 'development',
+      });
     }
   }
 }
