@@ -22,7 +22,19 @@ export default function RegisterPage() {
         body: JSON.stringify(form),
       });
 
-      if (!res.ok) throw new Error("Registration failed");
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Handle Zod validation errors (details array)
+        if (data.details && Array.isArray(data.details)) {
+          const firstError = data.details[0];
+          throw new Error(firstError.message || data.error || "Registration failed");
+        }
+        
+        // Handle standard errors
+        throw new Error(data.error || "Registration failed");
+      }
+      
       router.push("/login");
     } catch (err: any) {
       setError(err.message);
