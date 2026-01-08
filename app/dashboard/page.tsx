@@ -347,7 +347,7 @@ export default function DashboardPage() {
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-[#020617] border border-cyan-900/40 rounded-lg shadow-[0_0_20px_rgba(34,211,238,0.15)] p-4 sm:p-6">
               <h2 className="text-lg font-semibold text-cyan-400 mb-4">
-                Filter Issues
+                Filter Issues 
               </h2>
               <div className="flex flex-wrap gap-2">
                 {["", "Cloud Security", "Reteam Assessment", "VAPT"].map(
